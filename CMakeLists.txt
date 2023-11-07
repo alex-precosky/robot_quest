@@ -7,3 +7,8 @@ add_executable(robot_quest
     res/dungeon_map.c
     res/dungeon_tiles.c
 )
+
+target_include_directories(robot_quest
+    PUBLIC
+    ${CMAKE_SOURCE_DIR}
+)
