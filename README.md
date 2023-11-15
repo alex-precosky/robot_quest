@@ -55,6 +55,14 @@ Expect a cartridge ROM to be produced at `build/robot_quest.gb`. Load it into a
 flash cart and place it into a Game Boy, or load it in your favourite Game Boy
 emulator.
 
+## Running On a Physical Game Boy:
+
+![Running On a Physical Game Boy](hardware_gameboy.png)
+
+## Running In an Emulator:
+
+![Running In an Emulator](emulator.png)
+
 # Template Note
 
 This project was created from a gbdk-2020 template, which included the following readme:
