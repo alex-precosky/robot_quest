@@ -5,6 +5,7 @@ project(robot_quest C)
 
 add_executable(robot_quest
     src/main.c
+    src/title_screen.c
     res/dungeon_map.c
     res/dungeon_tiles.c
 )
