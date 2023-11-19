@@ -4,10 +4,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(robot_quest C)
 
 add_executable(robot_quest
+    src/entity.c
     src/main.c
     src/title_screen.c
-    res/dungeon_map.c
-    res/dungeon_tiles.c
+    res/sprites.c
 )
 
 target_include_directories(robot_quest
