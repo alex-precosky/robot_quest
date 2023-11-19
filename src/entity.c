@@ -24,3 +24,14 @@ void entity_animate(entity_t* entity)
     entity->current_tile_idx = (entity->current_tile_idx + 1) % entity->tile_seq_len;
     set_sprite_tile(entity->sprite_num, entity->tile_seq[entity->current_tile_idx]);
 }
+
+void entity_set_pos(entity_t* entity, uint8_t x, uint8_t y)
+{
+    entity->pos_x = x;
+    entity->pos_y = y;
+}
+
+void entity_set_input_dir_bitfield(entity_t* entity, uint8_t input_dir_bitfield)
+{
+    entity->input_dir_bitfield = input_dir_bitfield;
+}

@@ -6,6 +6,13 @@
  * and is animated each tick of a game update loop
  */
 
+typedef enum {
+    INPUT_DIR_UP = 1 << 0,
+    INPUT_DIR_DOWN = 1 << 1,
+    INPUT_DIR_LEFT = 1 << 2,
+    INPUT_DIR_RIGHT = 1 << 3
+} input_dir_e;
+
 /**
  * A structure representing something we draw on the screen and data associated
  * with that
@@ -15,6 +22,13 @@ typedef struct {
     uint8_t* tile_seq; /** A list of indices into tile memory that this sprite should animate in sequence */
     uint8_t tile_seq_len;
     uint8_t current_tile_idx; /** The index into tile_sequence that is currently being drawn */
+
+    uint8_t pos_x;
+    uint8_t pos_y;
+
+    uint8_t input_dir_bitfield; /** Directional control input, from enum
+                                    input_dir_e. Could be from a joypad, or from
+                                    AI */
 } entity_t;
 
 /**
@@ -33,3 +47,14 @@ void entity_set_tile_sequence(entity_t* entity, uint8_t* tile_seq, uint8_t tile_
  * @brief Animate one frame of an entity
  */
 void entity_animate(entity_t* entity);
+
+/**
+ * @brief Set an entity's location
+ */
+void entity_set_pos(entity_t* entity, uint8_t x, uint8_t y);
+
+/**
+ * @brief Set an entity's input direction bitfield
+ * @param bitfield - Bit field of bits from enum input_dir_e
+ */
+void entity_set_input_dir_bitfield(entity_t* entity, uint8_t input_dir_bitfield);
