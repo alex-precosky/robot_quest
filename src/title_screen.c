@@ -20,21 +20,21 @@ enum tile_indexes {
  SPRITE_TILE_COUNT
 };
 
-uint8_t alx_bot_throbber_tile_seq[] = {ALX_BOT_THROBBER_FRAME_0, ALX_BOT_THROBBER_FRAME_1};
-uint8_t srna_bot_throbber_tile_seq[] = {SRNA_BOT_THROBBER_FRAME_0, SRNA_BOT_THROBBER_FRAME_1};
+static uint8_t s_alx_bot_throbber_tile_seq[] = {ALX_BOT_THROBBER_FRAME_0, ALX_BOT_THROBBER_FRAME_1};
+static uint8_t s_srna_bot_throbber_tile_seq[] = {SRNA_BOT_THROBBER_FRAME_0, SRNA_BOT_THROBBER_FRAME_1};
+static entity_t s_entity_alx_bot = { 0 };
+static entity_t s_entity_srna_bot = { 0 };
 
-entity_t entity_alx_bot = { 0 };
-entity_t entity_srna_bot = { 0 };
 
 static void load_sprites()
 {
     set_sprite_data(0, SPRITE_TILE_COUNT, sprites);
 
-    entity_init(&entity_alx_bot, ALX_BOT_SPRITE_NUM);
-    entity_init(&entity_srna_bot, SRNA_BOT_SPRITE_NUM);
+    entity_init(&s_entity_alx_bot, ALX_BOT_SPRITE_NUM);
+    entity_init(&s_entity_srna_bot, SRNA_BOT_SPRITE_NUM);
 
-    entity_set_tile_sequence(&entity_alx_bot, alx_bot_throbber_tile_seq, 2);
-    entity_set_tile_sequence(&entity_srna_bot, srna_bot_throbber_tile_seq, 2);
+    entity_set_tile_sequence(&s_entity_alx_bot, s_alx_bot_throbber_tile_seq, 2);
+    entity_set_tile_sequence(&s_entity_srna_bot, s_srna_bot_throbber_tile_seq, 2);
 }
 
 static void draw_text()
@@ -66,8 +66,8 @@ static void animate_sprites()
     move_sprite(ALX_BOT_SPRITE_NUM, 40, 100);
     move_sprite(SRNA_BOT_SPRITE_NUM, 120, 100);
 
-    entity_animate(&entity_alx_bot);
-    entity_animate(&entity_srna_bot);
+    entity_animate(&s_entity_alx_bot);
+    entity_animate(&s_entity_srna_bot);
 }
 
 void run_title_screen()
