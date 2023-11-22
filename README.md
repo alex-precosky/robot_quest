@@ -10,11 +10,21 @@ environment is used. It's likely other environments could work as well.
 
 ## cmake 3.16+
 
+## python 3.10+
+
 ## The gbdk-2020 development kit:
 
 `git clone` gbdk-2020 from https://github.com/gbdk-2020/gbdk-2020 to somewhere on your PC.
 
 Set environment variable GBDK_HOME to the root of its directory tree.
+
+## The rgbds assembler:
+
+This is used by the music driver hUGEDriver
+
+https://github.com/gbdev/rgbds
+
+The `rgbasm` application should be available in $PATH
 
 ## A special modified version of sdcc (Small Devices C Compiler)
 

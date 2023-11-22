@@ -1,5 +1,6 @@
 #include "title_screen.h"
 #include "entity.h"
+#include "hUGEDriver.h"
 #include "res/sprites.h"
 #include <gb/gb.h>
 #include <gbdk/console.h>
@@ -7,26 +8,28 @@
 #include <stdint.h>
 #include <stdio.h>
 
+extern const hUGESong_t sample_song;
+
 const uint8_t ALX_BOT_SPRITE_NUM = 0;
 const uint8_t SRNA_BOT_SPRITE_NUM = 1;
 const uint8_t BOT_SELECT_ARROW_SPRITE_NUM = 2;
 
 enum tile_indexes {
- ALX_BOT_THROBBER_FRAME_0 = 0,
- ALX_BOT_THROBBER_FRAME_1,
+    ALX_BOT_THROBBER_FRAME_0 = 0,
+    ALX_BOT_THROBBER_FRAME_1,
 
- SRNA_BOT_THROBBER_FRAME_0,
- SRNA_BOT_THROBBER_FRAME_1,
+    SRNA_BOT_THROBBER_FRAME_0,
+    SRNA_BOT_THROBBER_FRAME_1,
 
- BOT_SELECT_ARROW_FRAME_0,
- BOT_SELECT_ARROW_FRAME_1,
+    BOT_SELECT_ARROW_FRAME_0,
+    BOT_SELECT_ARROW_FRAME_1,
 
- SPRITE_TILE_COUNT
+    SPRITE_TILE_COUNT
 };
 
-static uint8_t s_alx_bot_throbber_tile_seq[] = {ALX_BOT_THROBBER_FRAME_0, ALX_BOT_THROBBER_FRAME_1};
-static uint8_t s_srna_bot_throbber_tile_seq[] = {SRNA_BOT_THROBBER_FRAME_0, SRNA_BOT_THROBBER_FRAME_1};
-uint8_t bot_select_tile_seq[] = {BOT_SELECT_ARROW_FRAME_0, BOT_SELECT_ARROW_FRAME_1};
+static uint8_t s_alx_bot_throbber_tile_seq[] = { ALX_BOT_THROBBER_FRAME_0, ALX_BOT_THROBBER_FRAME_1 };
+static uint8_t s_srna_bot_throbber_tile_seq[] = { SRNA_BOT_THROBBER_FRAME_0, SRNA_BOT_THROBBER_FRAME_1 };
+uint8_t bot_select_tile_seq[] = { BOT_SELECT_ARROW_FRAME_0, BOT_SELECT_ARROW_FRAME_1 };
 
 static entity_t s_entity_alx_bot = { 0 };
 static entity_t s_entity_srna_bot = { 0 };
@@ -38,6 +41,20 @@ typedef enum {
     ARROW_POS_ALX,
     ARROW_POS_SRNA
 } arrow_position_e;
+
+static void init_sound()
+{
+    /* Initialize sound hardware */
+    NR52_REG = 0x80;
+    NR51_REG = 0xFF;
+    NR50_REG = 0x77;
+
+    __critical
+    {
+        hUGE_init(&sample_song);
+        add_VBL(hUGE_dosound);
+    }
+}
 
 static void load_sprites()
 {
@@ -115,6 +132,7 @@ static void animate_sprites()
 
 void run_title_screen()
 {
+    init_sound();
     draw_text();
     load_sprites();
 
@@ -127,7 +145,7 @@ void run_title_screen()
     while (1) {
 
         /* Skip four VBLs (slow down animation) */
-        for(uint8_t i = 0; i < 8; i++) {
+        for (uint8_t i = 0; i < 8; i++) {
             update_inputs();
             move_entities();
 
