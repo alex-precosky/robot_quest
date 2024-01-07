@@ -1,6 +1,8 @@
 #include "title_screen.h"
+#include "cbtfx.h"
 #include "entity.h"
 #include "hUGEDriver.h"
+#include "SFX_00.h"
 #include "res/sprites.h"
 #include <gb/gb.h>
 #include <gbdk/console.h>
@@ -51,8 +53,9 @@ static void init_sound()
 
     __critical
     {
-        hUGE_init(&sample_song);
         add_VBL(hUGE_dosound);
+        add_VBL(CBTFX_update);
+        hUGE_init(&sample_song);
     }
 }
 
@@ -113,9 +116,15 @@ static void update_inputs()
 static void move_entities()
 {
     if (s_entity_bot_select_arrow.input_dir_bitfield & INPUT_DIR_LEFT) {
-        entity_set_pos(&s_entity_bot_select_arrow, 40, 90);
+        if (s_entity_bot_select_arrow.pos_x != 40) {
+            entity_set_pos(&s_entity_bot_select_arrow, 40, 90);
+            CBTFX_init(SFX_00);
+        }
     } else if (s_entity_bot_select_arrow.input_dir_bitfield & INPUT_DIR_RIGHT) {
-        entity_set_pos(&s_entity_bot_select_arrow, 120, 90);
+        if (s_entity_bot_select_arrow.pos_x != 120) {
+            entity_set_pos(&s_entity_bot_select_arrow, 120, 90);
+            CBTFX_init(SFX_00);
+        }
     }
 
     move_sprite(ALX_BOT_SPRITE_NUM, s_entity_alx_bot.pos_x, s_entity_alx_bot.pos_y);

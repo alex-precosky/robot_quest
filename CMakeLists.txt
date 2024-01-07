@@ -7,6 +7,13 @@ project(robot_quest C)
 include(ExternalProject)
 
 find_package(hUGEDriver)
+find_package(CBT_FX)
+
+add_fx_hammer_sfx_library(
+ Sfx_Select
+ FXSAV res/hammered.sav
+ FXNUM 0
+)
 
 add_executable(robot_quest
     src/entity.c
@@ -19,9 +26,12 @@ add_executable(robot_quest
 target_include_directories(robot_quest
     PUBLIC
     ${HUGEDRIVER_INCLUDE_DIR}
+    ${SFX_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}
 )
 
 target_link_libraries(robot_quest
     hUGEDriver
+    CBT_FX
+    Sfx_Select
 )
