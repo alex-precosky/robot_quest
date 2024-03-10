@@ -98,7 +98,7 @@ static void draw_text()
     printf("Srna-Bot");
 
     gotoxy(3, 16);
-    printf("Copyright 2023");
+    printf("Copyright 2024");
 }
 
 static void update_inputs()
