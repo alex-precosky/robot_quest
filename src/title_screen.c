@@ -16,6 +16,10 @@ const uint8_t ALX_BOT_SPRITE_NUM = 0;
 const uint8_t SRNA_BOT_SPRITE_NUM = 1;
 const uint8_t BOT_SELECT_ARROW_SPRITE_NUM = 2;
 
+const uint8_t ALEX_BOT_X_POS = 40;
+const uint8_t SERENA_BOT_X_POS = 120;
+const uint8_t ARROW_Y_POS = 90;
+
 enum tile_indexes {
     ALX_BOT_THROBBER_FRAME_0 = 0,
     ALX_BOT_THROBBER_FRAME_1,
@@ -67,14 +71,15 @@ static void load_sprites()
     entity_init(&s_entity_srna_bot, SRNA_BOT_SPRITE_NUM);
     entity_init(&s_entity_bot_select_arrow, BOT_SELECT_ARROW_SPRITE_NUM);
 
-    s_entity_bot_select_arrow.pos_x = 40;
+    /* Initialize select the left bot */
+    entity_set_pos(&s_entity_bot_select_arrow, ALEX_BOT_X_POS, ARROW_Y_POS);
 
     entity_set_tile_sequence(&s_entity_alx_bot, s_alx_bot_throbber_tile_seq, 2);
     entity_set_tile_sequence(&s_entity_srna_bot, s_srna_bot_throbber_tile_seq, 2);
     entity_set_tile_sequence(&s_entity_bot_select_arrow, bot_select_tile_seq, 2);
 
-    entity_set_pos(&s_entity_alx_bot, 40, 100);
-    entity_set_pos(&s_entity_srna_bot, 120, 100);
+    entity_set_pos(&s_entity_alx_bot, ALEX_BOT_X_POS, 100);
+    entity_set_pos(&s_entity_srna_bot, SERENA_BOT_X_POS, 100);
 }
 
 static void draw_text()
@@ -116,13 +121,13 @@ static void update_inputs()
 static void move_entities()
 {
     if (s_entity_bot_select_arrow.input_dir_bitfield & INPUT_DIR_LEFT) {
-        if (s_entity_bot_select_arrow.pos_x != 40) {
-            entity_set_pos(&s_entity_bot_select_arrow, 40, 90);
+        if (s_entity_bot_select_arrow.pos_x != ALEX_BOT_X_POS) {
+            entity_set_pos(&s_entity_bot_select_arrow, ALEX_BOT_X_POS, ARROW_Y_POS);
             CBTFX_init(SFX_00);
         }
     } else if (s_entity_bot_select_arrow.input_dir_bitfield & INPUT_DIR_RIGHT) {
-        if (s_entity_bot_select_arrow.pos_x != 120) {
-            entity_set_pos(&s_entity_bot_select_arrow, 120, 90);
+        if (s_entity_bot_select_arrow.pos_x != SERENA_BOT_X_POS) {
+            entity_set_pos(&s_entity_bot_select_arrow, SERENA_BOT_X_POS, ARROW_Y_POS);
             CBTFX_init(SFX_00);
         }
     }
