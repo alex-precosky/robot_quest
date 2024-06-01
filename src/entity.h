@@ -10,7 +10,8 @@ typedef enum {
     INPUT_DIR_UP = 1 << 0,
     INPUT_DIR_DOWN = 1 << 1,
     INPUT_DIR_LEFT = 1 << 2,
-    INPUT_DIR_RIGHT = 1 << 3
+    INPUT_DIR_RIGHT = 1 << 3,
+    INPUT_START = 1 << 4
 } input_dir_e;
 
 /**

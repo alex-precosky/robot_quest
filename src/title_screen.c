@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "hUGEDriver.h"
 #include "SFX_00.h"
+#include "SFX_01.h"
 #include "res/sprites.h"
 #include <gb/gb.h>
 #include <gbdk/console.h>
@@ -27,15 +28,32 @@ enum tile_indexes {
     SRNA_BOT_THROBBER_FRAME_0,
     SRNA_BOT_THROBBER_FRAME_1,
 
-    BOT_SELECT_ARROW_FRAME_0,
+    BOT_SELECTED_ARROW_FRAME_0,
+    BOT_SELECTED_ARROW_FRAME_1,
+
+    BOT_SELECT_ARROW_FRAME_0 = 5,
     BOT_SELECT_ARROW_FRAME_1,
+    BOT_SELECT_ARROW_FRAME_2,
+    BOT_SELECT_ARROW_FRAME_3,
+    BOT_SELECT_ARROW_FRAME_4,
+    BOT_SELECT_ARROW_FRAME_5,
 
     SPRITE_TILE_COUNT
 };
 
+/* In the title screen, we can use the D-Pad to toggle left and right between
+   bots, then once one is chosen, hang in the title screen for a little while,
+   but don't let us move the selection cursor */
+enum title_screen_state {
+    STATE_CHOOSING_BOT = 0,
+    STATE_BOT_CHOSEN
+};
+static uint8_t s_state;
+
 static uint8_t s_alx_bot_throbber_tile_seq[] = { ALX_BOT_THROBBER_FRAME_0, ALX_BOT_THROBBER_FRAME_1 };
 static uint8_t s_srna_bot_throbber_tile_seq[] = { SRNA_BOT_THROBBER_FRAME_0, SRNA_BOT_THROBBER_FRAME_1 };
-uint8_t bot_select_tile_seq[] = { BOT_SELECT_ARROW_FRAME_0, BOT_SELECT_ARROW_FRAME_1 };
+static uint8_t bot_select_tile_seq[] = { BOT_SELECT_ARROW_FRAME_0, BOT_SELECT_ARROW_FRAME_1, BOT_SELECT_ARROW_FRAME_2, BOT_SELECT_ARROW_FRAME_3, BOT_SELECT_ARROW_FRAME_4, BOT_SELECT_ARROW_FRAME_5 };
+static uint8_t bot_selected_tile_seq[] = { BOT_SELECTED_ARROW_FRAME_0, BOT_SELECTED_ARROW_FRAME_1 };
 
 static entity_t s_entity_alx_bot = { 0 };
 static entity_t s_entity_srna_bot = { 0 };
@@ -76,7 +94,7 @@ static void load_sprites()
 
     entity_set_tile_sequence(&s_entity_alx_bot, s_alx_bot_throbber_tile_seq, 2);
     entity_set_tile_sequence(&s_entity_srna_bot, s_srna_bot_throbber_tile_seq, 2);
-    entity_set_tile_sequence(&s_entity_bot_select_arrow, bot_select_tile_seq, 2);
+    entity_set_tile_sequence(&s_entity_bot_select_arrow, bot_select_tile_seq, 6);
 
     entity_set_pos(&s_entity_alx_bot, ALEX_BOT_X_POS, 100);
     entity_set_pos(&s_entity_srna_bot, SERENA_BOT_X_POS, 100);
@@ -113,6 +131,10 @@ static void update_inputs()
         entity_set_input_dir_bitfield(&s_entity_bot_select_arrow, INPUT_DIR_LEFT);
     } else if (s_joypads.joy0 & J_RIGHT) {
         entity_set_input_dir_bitfield(&s_entity_bot_select_arrow, INPUT_DIR_RIGHT);
+    } else if (s_joypads.joy0 & J_START) {
+        s_state = STATE_BOT_CHOSEN;
+        entity_set_tile_sequence(&s_entity_bot_select_arrow, bot_selected_tile_seq, 2);
+        CBTFX_init(SFX_01);
     } else {
         s_entity_bot_select_arrow.input_dir_bitfield = 0;
     }
@@ -146,6 +168,8 @@ static void animate_sprites()
 
 void run_title_screen()
 {
+    s_state = STATE_CHOOSING_BOT;
+
     init_sound();
     draw_text();
     load_sprites();
@@ -160,8 +184,11 @@ void run_title_screen()
 
         /* Skip four VBLs (slow down animation) */
         for (uint8_t i = 0; i < 8; i++) {
-            update_inputs();
-            move_entities();
+
+            if (s_state == STATE_CHOOSING_BOT) {
+                update_inputs();
+                move_entities();
+            }
 
             vsync();
         }
