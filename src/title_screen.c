@@ -1,9 +1,9 @@
 #include "title_screen.h"
+#include "SFX_00.h"
+#include "SFX_01.h"
 #include "cbtfx.h"
 #include "entity.h"
 #include "hUGEDriver.h"
-#include "SFX_00.h"
-#include "SFX_01.h"
 #include "res/sprites.h"
 #include <gb/gb.h>
 #include <gbdk/console.h>
@@ -48,7 +48,23 @@ enum title_screen_state {
     STATE_CHOOSING_BOT = 0,
     STATE_BOT_CHOSEN
 };
-static uint8_t s_state;
+
+typedef struct {
+    uint8_t state;
+    uint16_t systime_entered; /**< counted in VBL interrupts */
+} StateInfo;
+static StateInfo s_state;
+
+static void change_state(enum title_screen_state new_state)
+{
+    s_state.state = new_state;
+    s_state.systime_entered = sys_time;
+}
+
+static enum title_screen_state get_state()
+{
+    return s_state.state;
+}
 
 static uint8_t s_alx_bot_throbber_tile_seq[] = { ALX_BOT_THROBBER_FRAME_0, ALX_BOT_THROBBER_FRAME_1 };
 static uint8_t s_srna_bot_throbber_tile_seq[] = { SRNA_BOT_THROBBER_FRAME_0, SRNA_BOT_THROBBER_FRAME_1 };
@@ -132,7 +148,7 @@ static void update_inputs()
     } else if (s_joypads.joy0 & J_RIGHT) {
         entity_set_input_dir_bitfield(&s_entity_bot_select_arrow, INPUT_DIR_RIGHT);
     } else if (s_joypads.joy0 & J_START) {
-        s_state = STATE_BOT_CHOSEN;
+        change_state(STATE_BOT_CHOSEN);
         entity_set_tile_sequence(&s_entity_bot_select_arrow, bot_selected_tile_seq, 2);
         CBTFX_init(SFX_01);
     } else {
@@ -168,7 +184,7 @@ static void animate_sprites()
 
 void run_title_screen()
 {
-    s_state = STATE_CHOOSING_BOT;
+    change_state(STATE_CHOOSING_BOT);
 
     init_sound();
     draw_text();
@@ -185,7 +201,7 @@ void run_title_screen()
         /* Skip four VBLs (slow down animation) */
         for (uint8_t i = 0; i < 8; i++) {
 
-            if (s_state == STATE_CHOOSING_BOT) {
+            if (get_state() == STATE_CHOOSING_BOT) {
                 update_inputs();
                 move_entities();
             }
