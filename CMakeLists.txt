@@ -25,6 +25,7 @@ add_fx_hammer_sfx_library(
 
 add_executable(robot_quest
     src/entity.c
+    src/level.c
     src/main.c
     src/title_screen.c
     res/sprites.c

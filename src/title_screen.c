@@ -8,6 +8,7 @@
 #include <gb/gb.h>
 #include <gbdk/console.h>
 #include <gbdk/font.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -20,6 +21,10 @@ const uint8_t BOT_SELECT_ARROW_SPRITE_NUM = 2;
 const uint8_t ALEX_BOT_X_POS = 40;
 const uint8_t SERENA_BOT_X_POS = 120;
 const uint8_t ARROW_Y_POS = 90;
+
+/* How many frames to pause after choosing a bot before leaving the title
+   screen */
+const uint16_t START_PAUSE_TIME = 100;
 
 enum tile_indexes {
     ALX_BOT_THROBBER_FRAME_0 = 0,
@@ -66,6 +71,11 @@ static enum title_screen_state get_state()
     return s_state.state;
 }
 
+static uint16_t time_in_state()
+{
+    return sys_time - s_state.systime_entered;
+}
+
 static uint8_t s_alx_bot_throbber_tile_seq[] = { ALX_BOT_THROBBER_FRAME_0, ALX_BOT_THROBBER_FRAME_1 };
 static uint8_t s_srna_bot_throbber_tile_seq[] = { SRNA_BOT_THROBBER_FRAME_0, SRNA_BOT_THROBBER_FRAME_1 };
 static uint8_t bot_select_tile_seq[] = { BOT_SELECT_ARROW_FRAME_0, BOT_SELECT_ARROW_FRAME_1, BOT_SELECT_ARROW_FRAME_2, BOT_SELECT_ARROW_FRAME_3, BOT_SELECT_ARROW_FRAME_4, BOT_SELECT_ARROW_FRAME_5 };
@@ -97,6 +107,15 @@ static void init_sound()
     }
 }
 
+static void stop_sound()
+{
+    __critical
+    {
+        remove_VBL(hUGE_dosound);
+        remove_VBL(CBTFX_update);
+    }
+}
+
 static void load_sprites()
 {
     set_sprite_data(0, SPRITE_TILE_COUNT, sprites);
@@ -114,6 +133,13 @@ static void load_sprites()
 
     entity_set_pos(&s_entity_alx_bot, ALEX_BOT_X_POS, 100);
     entity_set_pos(&s_entity_srna_bot, SERENA_BOT_X_POS, 100);
+}
+
+static void hide_sprites()
+{
+    move_sprite(ALX_BOT_SPRITE_NUM, 0, 0);
+    move_sprite(SRNA_BOT_SPRITE_NUM, 0, 0);
+    move_sprite(BOT_SELECT_ARROW_SPRITE_NUM, 0, 0);
 }
 
 static void draw_text()
@@ -196,7 +222,9 @@ void run_title_screen()
     LCDC_REG |= LCDCF_OBJON; /* Enable the drawing of sprites */
     DISPLAY_ON;
 
-    while (1) {
+    bool done = false;
+
+    while (!done) {
 
         /* Skip four VBLs (slow down animation) */
         for (uint8_t i = 0; i < 8; i++) {
@@ -204,6 +232,10 @@ void run_title_screen()
             if (get_state() == STATE_CHOOSING_BOT) {
                 update_inputs();
                 move_entities();
+            } else if (get_state() == STATE_BOT_CHOSEN) {
+                if (time_in_state() > START_PAUSE_TIME) {
+                    done = true;
+                }
             }
 
             vsync();
@@ -211,4 +243,7 @@ void run_title_screen()
 
         animate_sprites();
     }
+
+    hide_sprites();
+    stop_sound();
 }
