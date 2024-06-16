@@ -28,6 +28,8 @@ add_executable(robot_quest
     src/level.c
     src/main.c
     src/title_screen.c
+    res/level_map.c
+    res/level_map_tiles.c
     res/sprites.c
     res/sample_song.c
 )
