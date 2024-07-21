@@ -1,3 +1,4 @@
+#include "bots.h"
 #include "level.h"
 #include "res/level_map.h"
 #include "res/level_map_tiles.h"
@@ -15,9 +16,10 @@ void init_gfx(void)
     SHOW_BKG;
 }
 
-void run_level()
+void run_level(enum bot selected_bot)
 {
     cls();
+    (void)selected_bot;
 
     gotoxy(0, 8);
     printf("### LEVEL START ###");

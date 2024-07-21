@@ -1,6 +1,7 @@
 #include "title_screen.h"
 #include "SFX_00.h"
 #include "SFX_01.h"
+#include "bots.h"
 #include "cbtfx.h"
 #include "entity.h"
 #include "hUGEDriver.h"
@@ -21,6 +22,8 @@ const uint8_t BOT_SELECT_ARROW_SPRITE_NUM = 2;
 const uint8_t ALEX_BOT_X_POS = 40;
 const uint8_t SERENA_BOT_X_POS = 120;
 const uint8_t ARROW_Y_POS = 90;
+
+static enum bot s_selected_bot = BOT_ALEX;
 
 /* How many frames to pause after choosing a bot before leaving the title
    screen */
@@ -188,11 +191,13 @@ static void move_entities()
         if (s_entity_bot_select_arrow.pos_x != ALEX_BOT_X_POS) {
             entity_set_pos(&s_entity_bot_select_arrow, ALEX_BOT_X_POS, ARROW_Y_POS);
             CBTFX_init(SFX_00);
+            s_selected_bot = BOT_ALEX;
         }
     } else if (s_entity_bot_select_arrow.input_dir_bitfield & INPUT_DIR_RIGHT) {
         if (s_entity_bot_select_arrow.pos_x != SERENA_BOT_X_POS) {
             entity_set_pos(&s_entity_bot_select_arrow, SERENA_BOT_X_POS, ARROW_Y_POS);
             CBTFX_init(SFX_00);
+            s_selected_bot = BOT_SERENA;
         }
     }
 
@@ -208,7 +213,7 @@ static void animate_sprites()
     entity_animate(&s_entity_bot_select_arrow);
 }
 
-void run_title_screen()
+title_screen_result_t run_title_screen()
 {
     change_state(STATE_CHOOSING_BOT);
 
@@ -246,4 +251,10 @@ void run_title_screen()
 
     hide_sprites();
     stop_sound();
+
+    title_screen_result_t result = {
+        .chosen_bot = s_selected_bot,
+    };
+
+    return result;
 }
