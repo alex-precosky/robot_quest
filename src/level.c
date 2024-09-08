@@ -1,10 +1,20 @@
 #include "bots.h"
+#include "entity.h"
 #include "level.h"
 #include "res/level_map.h"
 #include "res/level_map_tiles.h"
+#include "res/sprites.h"
+#include "sprite_idx.h"
 #include <gb/gb.h>
 #include <gbdk/console.h>
+#include <stdint.h>
 #include <stdio.h>
+
+const uint8_t SPRITE_NUM_PLAYER_BOT = 0;
+
+static entity_t s_entity_player_bot;
+
+static uint8_t s_player_bot_tile_seq[] = { ALX_BOT_THROBBER_FRAME_0, ALX_BOT_THROBBER_FRAME_1 };
 
 void init_gfx(void)
 {
@@ -14,6 +24,20 @@ void init_gfx(void)
 
     // Turn the background map on to make it visible
     SHOW_BKG;
+
+    // Load sprites
+    set_sprite_data(0, SPRITE_TILE_COUNT, sprites);
+    entity_init(&s_entity_player_bot, SPRITE_NUM_PLAYER_BOT);
+    entity_set_tile_sequence(&s_entity_player_bot, s_player_bot_tile_seq, 2);
+    entity_set_pos(&s_entity_player_bot, 20, 20);
+
+    LCDC_REG |= LCDCF_OBJON; /* Enable the drawing of sprites */
+    DISPLAY_ON;
+}
+
+static void move_entities()
+{
+    move_sprite(SPRITE_NUM_PLAYER_BOT, s_entity_player_bot.pos_x, s_entity_player_bot.pos_y);
 }
 
 void run_level(enum bot selected_bot)
@@ -27,6 +51,7 @@ void run_level(enum bot selected_bot)
     init_gfx();
 
     while (1) {
+        move_entities();
         vsync();
     }
 }
