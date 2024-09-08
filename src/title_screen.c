@@ -6,6 +6,7 @@
 #include "entity.h"
 #include "hUGEDriver.h"
 #include "res/sprites.h"
+#include "sprite_idx.h"
 #include <gb/gb.h>
 #include <gbdk/console.h>
 #include <gbdk/font.h>
@@ -28,26 +29,6 @@ static enum bot s_selected_bot = BOT_ALEX;
 /* How many frames to pause after choosing a bot before leaving the title
    screen */
 const uint16_t START_PAUSE_TIME = 100;
-
-enum tile_indexes {
-    ALX_BOT_THROBBER_FRAME_0 = 0,
-    ALX_BOT_THROBBER_FRAME_1,
-
-    SRNA_BOT_THROBBER_FRAME_0,
-    SRNA_BOT_THROBBER_FRAME_1,
-
-    BOT_SELECTED_ARROW_FRAME_0,
-    BOT_SELECTED_ARROW_FRAME_1,
-
-    BOT_SELECT_ARROW_FRAME_0 = 5,
-    BOT_SELECT_ARROW_FRAME_1,
-    BOT_SELECT_ARROW_FRAME_2,
-    BOT_SELECT_ARROW_FRAME_3,
-    BOT_SELECT_ARROW_FRAME_4,
-    BOT_SELECT_ARROW_FRAME_5,
-
-    SPRITE_TILE_COUNT
-};
 
 /* In the title screen, we can use the D-Pad to toggle left and right between
    bots, then once one is chosen, hang in the title screen for a little while,
