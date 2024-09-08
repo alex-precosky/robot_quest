@@ -38,6 +38,7 @@ target_include_directories(robot_quest
     PUBLIC
     ${HUGEDRIVER_INCLUDE_DIR}
     ${SFX_INCLUDE_DIR}
+    $ENV{GBDK_HOME}/include
     ${CMAKE_SOURCE_DIR}
 )
 
