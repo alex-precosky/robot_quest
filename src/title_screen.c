@@ -15,9 +15,9 @@
 
 extern const hUGESong_t sample_song;
 
-const uint8_t ALX_BOT_SPRITE_NUM = 0;
-const uint8_t SRNA_BOT_SPRITE_NUM = 1;
-const uint8_t BOT_SELECT_ARROW_SPRITE_NUM = 2;
+const uint8_t SPRITE_NUM_ALEX_BOT = 0;
+const uint8_t SPRITE_NUM_SRNA_BOT = 1;
+const uint8_t SPRITE_NUM_BOT_SELECT_ARROW = 2;
 
 const uint8_t ALEX_BOT_X_POS = 40;
 const uint8_t SERENA_BOT_X_POS = 120;
@@ -123,9 +123,9 @@ static void load_sprites()
 {
     set_sprite_data(0, SPRITE_TILE_COUNT, sprites);
 
-    entity_init(&s_entity_alx_bot, ALX_BOT_SPRITE_NUM);
-    entity_init(&s_entity_srna_bot, SRNA_BOT_SPRITE_NUM);
-    entity_init(&s_entity_bot_select_arrow, BOT_SELECT_ARROW_SPRITE_NUM);
+    entity_init(&s_entity_alx_bot, SPRITE_NUM_ALEX_BOT);
+    entity_init(&s_entity_srna_bot, SPRITE_NUM_SRNA_BOT);
+    entity_init(&s_entity_bot_select_arrow, SPRITE_NUM_BOT_SELECT_ARROW);
 
     /* Initialize select the left bot */
     entity_set_pos(&s_entity_bot_select_arrow, ALEX_BOT_X_POS, ARROW_Y_POS);
@@ -140,9 +140,9 @@ static void load_sprites()
 
 static void hide_sprites()
 {
-    move_sprite(ALX_BOT_SPRITE_NUM, 0, 0);
-    move_sprite(SRNA_BOT_SPRITE_NUM, 0, 0);
-    move_sprite(BOT_SELECT_ARROW_SPRITE_NUM, 0, 0);
+    move_sprite(SPRITE_NUM_ALEX_BOT, 0, 0);
+    move_sprite(SPRITE_NUM_SRNA_BOT, 0, 0);
+    move_sprite(SPRITE_NUM_BOT_SELECT_ARROW, 0, 0);
 }
 
 static void draw_text()
@@ -201,9 +201,9 @@ static void move_entities()
         }
     }
 
-    move_sprite(ALX_BOT_SPRITE_NUM, s_entity_alx_bot.pos_x, s_entity_alx_bot.pos_y);
-    move_sprite(SRNA_BOT_SPRITE_NUM, s_entity_srna_bot.pos_x, s_entity_srna_bot.pos_y);
-    move_sprite(BOT_SELECT_ARROW_SPRITE_NUM, s_entity_bot_select_arrow.pos_x, s_entity_bot_select_arrow.pos_y);
+    move_sprite(SPRITE_NUM_ALEX_BOT, s_entity_alx_bot.pos_x, s_entity_alx_bot.pos_y);
+    move_sprite(SPRITE_NUM_SRNA_BOT, s_entity_srna_bot.pos_x, s_entity_srna_bot.pos_y);
+    move_sprite(SPRITE_NUM_BOT_SELECT_ARROW, s_entity_bot_select_arrow.pos_x, s_entity_bot_select_arrow.pos_y);
 }
 
 static void animate_sprites()
