@@ -69,8 +69,6 @@ static entity_t s_entity_alx_bot = { 0 };
 static entity_t s_entity_srna_bot = { 0 };
 entity_t s_entity_bot_select_arrow = { 0 };
 
-joypads_t s_joypads;
-
 typedef enum {
     ARROW_POS_ALX,
     ARROW_POS_SRNA
@@ -150,14 +148,14 @@ static void draw_text()
     printf("Copyright 2024");
 }
 
-static void update_inputs()
+static void update_inputs(const joypads_t *joypads)
 {
-    joypad_ex(&s_joypads);
-    if (s_joypads.joy0 & J_LEFT) {
+    joypad_ex(joypads);
+    if (joypads->joy0 & J_LEFT) {
         entity_set_input_dir_bitfield(&s_entity_bot_select_arrow, INPUT_DIR_LEFT);
-    } else if (s_joypads.joy0 & J_RIGHT) {
+    } else if (joypads->joy0 & J_RIGHT) {
         entity_set_input_dir_bitfield(&s_entity_bot_select_arrow, INPUT_DIR_RIGHT);
-    } else if (s_joypads.joy0 & J_START) {
+    } else if (joypads->joy0 & J_START) {
         change_state(STATE_BOT_CHOSEN);
         entity_set_tile_sequence(&s_entity_bot_select_arrow, bot_selected_tile_seq, 2);
         CBTFX_init(SFX_01);
@@ -194,16 +192,13 @@ static void animate_sprites()
     entity_animate(&s_entity_bot_select_arrow);
 }
 
-title_screen_result_t run_title_screen()
+title_screen_result_t run_title_screen(const joypads_t *joypads)
 {
     change_state(STATE_CHOOSING_BOT);
 
     init_sound();
     draw_text();
     load_sprites();
-
-    const uint8_t num_joypads = 1;
-    joypad_init(num_joypads, &s_joypads);
 
     LCDC_REG |= LCDCF_OBJON; /* Enable the drawing of sprites */
     DISPLAY_ON;
@@ -216,7 +211,7 @@ title_screen_result_t run_title_screen()
         for (uint8_t i = 0; i < 8; i++) {
 
             if (get_state() == STATE_CHOOSING_BOT) {
-                update_inputs();
+                update_inputs(joypads);
                 move_entities();
             } else if (get_state() == STATE_BOT_CHOSEN) {
                 if (time_in_state() > START_PAUSE_TIME) {
