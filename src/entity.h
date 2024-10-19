@@ -14,6 +14,14 @@ typedef enum {
     INPUT_START = 1 << 4
 } input_dir_e;
 
+typedef enum {
+    VELOCITY_STOP = 0,
+    VELOCITY_UP = 1,
+    VELOCITY_DOWN = 2,
+    VELOCITY_LEFT = 3,
+    VELOCITY_RIGHT = 4
+} velocity_e;
+
 /**
  * A structure representing something we draw on the screen and data associated
  * with that
@@ -30,6 +38,10 @@ typedef struct {
     uint8_t input_dir_bitfield; /** Directional control input, from enum
                                     input_dir_e. Could be from a joypad, or from
                                     AI */
+
+    velocity_e velocity; /** Robots move in a grid. They can only move along
+                             these directions, one at a time */
+
 } entity_t;
 
 /**

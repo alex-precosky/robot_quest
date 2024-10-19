@@ -35,12 +35,26 @@ void init_gfx(void)
     DISPLAY_ON;
 }
 
+static void update_inputs(const joypads_t *joypads)
+{
+    joypad_ex(joypads);
+    if (joypads->joy0 & J_LEFT) {
+        entity_set_input_dir_bitfield(&s_entity_player_bot, INPUT_DIR_LEFT);
+    } else if (joypads->joy0 & J_RIGHT) {
+        entity_set_input_dir_bitfield(&s_entity_player_bot, INPUT_DIR_RIGHT);
+    } else if (joypads->joy0 & J_UP) {
+        entity_set_input_dir_bitfield(&s_entity_player_bot, INPUT_DIR_UP);
+    } else if (joypads->joy0 & J_DOWN) {
+        entity_set_input_dir_bitfield(&s_entity_player_bot, INPUT_DIR_DOWN);
+    }
+}
+
 static void move_entities()
 {
     move_sprite(SPRITE_NUM_PLAYER_BOT, s_entity_player_bot.pos_x, s_entity_player_bot.pos_y);
 }
 
-void run_level(enum bot selected_bot)
+void run_level(enum bot selected_bot, const joypads_t *joypads)
 {
     cls();
     (void)selected_bot;
@@ -51,6 +65,7 @@ void run_level(enum bot selected_bot)
     init_gfx();
 
     while (1) {
+        update_inputs(joypads);
         move_entities();
         vsync();
     }

@@ -12,7 +12,7 @@ int main(void)
     title_screen_result_t tsr;
 
     tsr = run_title_screen(&s_joypads);
-    run_level(tsr.chosen_bot);
+    run_level(tsr.chosen_bot, &s_joypads);
 
     return 0;
 }
