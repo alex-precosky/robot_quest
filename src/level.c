@@ -49,6 +49,37 @@ static void update_inputs(const joypads_t *joypads)
     }
 }
 
+static void update_velocities()
+{
+    if(s_entity_player_bot.input_dir_bitfield & INPUT_DIR_LEFT) {
+        s_entity_player_bot.velocity = VELOCITY_LEFT;
+    } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_RIGHT) {
+        s_entity_player_bot.velocity = VELOCITY_RIGHT;
+    } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_UP) {
+        s_entity_player_bot.velocity = VELOCITY_UP;
+    } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_DOWN) {
+        s_entity_player_bot.velocity = VELOCITY_DOWN;
+    }
+}
+
+static void update_positions()
+{
+    uint8_t dx = 0;
+    uint8_t dy = 0;
+
+    if(s_entity_player_bot.velocity == VELOCITY_LEFT) {
+        dx = -1;
+    } else if (s_entity_player_bot.velocity == VELOCITY_RIGHT) {
+        dx = 1;
+    } else if (s_entity_player_bot.velocity == VELOCITY_DOWN) {
+        dy = 1;
+    } else if (s_entity_player_bot.velocity == VELOCITY_UP) {
+        dy = -1;
+    }
+
+    entity_set_pos(&s_entity_player_bot, s_entity_player_bot.pos_x + dx, s_entity_player_bot.pos_y + dy);
+}
+
 static void move_entities()
 {
     move_sprite(SPRITE_NUM_PLAYER_BOT, s_entity_player_bot.pos_x, s_entity_player_bot.pos_y);
@@ -66,6 +97,8 @@ void run_level(enum bot selected_bot, const joypads_t *joypads)
 
     while (1) {
         update_inputs(joypads);
+        update_velocities();
+        update_positions();
         move_entities();
         vsync();
     }
