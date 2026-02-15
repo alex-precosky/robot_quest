@@ -16,7 +16,7 @@ set(HUGEDRIVER_BINARY_DIR ${BINARY_DIR})
 
 find_package(Python COMPONENTS Interpreter)
 
-find_program(RGBASM rgbasm)
+find_program(RGBASM rgbasm REQUIRED)
 message("Found rgbasm at ${RGBASM}")
 
 find_program(SDAR sdar PATHS $ENV{SDCCDIR}/bin REQUIRED)
