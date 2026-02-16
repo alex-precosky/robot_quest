@@ -95,6 +95,8 @@ static void stop_sound()
     {
         remove_VBL(hUGE_dosound);
         remove_VBL(CBTFX_update);
+        hUGE_mute_channel(HT_CH2, 1);
+        hUGE_mute_channel(HT_CH4, 1);
     }
 }
 
