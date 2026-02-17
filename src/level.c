@@ -156,6 +156,12 @@ void run_level(enum bot selected_bot, const joypads_t *joypads)
     gotoxy(0, 8);
     printf("### LEVEL START ###");
 
+    /* Pause for a bit with the 'level start' shown */
+    uint16_t pause_start = sys_time;
+    while ((sys_time - pause_start) < 100) {
+        vsync();
+    }
+
     init_gfx();
 
     while (1) {
