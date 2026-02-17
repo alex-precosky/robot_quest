@@ -154,7 +154,12 @@ void run_level(enum bot selected_bot, const joypads_t *joypads)
     (void)selected_bot;
 
     gotoxy(0, 8);
-    printf("### LEVEL START ###");
+
+    if (selected_bot == BOT_ALEX) {
+        printf(" # ALEX BOT START #");
+    } else {
+        printf("# SERENA BOT START #");
+    }
 
     /* Pause for a bit with the 'level start' shown */
     uint16_t pause_start = sys_time;
