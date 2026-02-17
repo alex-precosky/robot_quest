@@ -139,6 +139,15 @@ static position_t grid_to_xy(position_t grid_position)
     return screen_position;
 }
 
+static void animate_player_bot() {
+    static uint8_t animation_frame_counter = 0;
+    animation_frame_counter++;
+    if (animation_frame_counter >= 8) { // Animate every 8 VBLs
+        entity_animate(&s_entity_player_bot);
+        animation_frame_counter = 0;
+    }
+}
+
 void run_level(enum bot selected_bot, const joypads_t *joypads)
 {
     cls();
@@ -154,6 +163,9 @@ void run_level(enum bot selected_bot, const joypads_t *joypads)
         update_velocities();
         update_positions();
         move_entities();
+
+        animate_player_bot();
+
         vsync();
     }
 }
