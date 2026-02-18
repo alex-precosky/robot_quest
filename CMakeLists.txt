@@ -27,6 +27,7 @@ add_executable(robot_quest
     src/entity.c
     src/level.c
     src/main.c
+    src/sprite_idx.c
     src/title_screen.c
     res/level_map.c
     res/level_map_tiles.c

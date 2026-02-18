@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 enum tile_indexes {
     ALX_BOT_THROBBER_FRAME_0 = 0,
     ALX_BOT_THROBBER_FRAME_1,
@@ -21,3 +23,6 @@ enum tile_indexes {
 
     SPRITE_TILE_COUNT
 };
+
+extern uint8_t alx_bot_tile_seq[2];
+extern uint8_t srna_bot_tile_seq[2];

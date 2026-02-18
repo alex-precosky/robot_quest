@@ -15,7 +15,7 @@ const uint8_t SPRITE_NUM_PLAYER_BOT = 0;
 
 static entity_t s_entity_player_bot;
 
-static uint8_t s_player_bot_tile_seq[] = { ALX_BOT_THROBBER_FRAME_0, ALX_BOT_THROBBER_FRAME_1 };
+static uint8_t *s_player_bot_tile_seq = NULL;
 
 static const uint8_t GRID_TO_SCREEN_OFFSET_X = 21;
 static const uint8_t GRID_TO_SCREEN_OFFSET_Y = 28;
@@ -30,7 +30,7 @@ typedef struct {
 static position_t grid_to_xy(position_t grid_position);
 static bool is_entity_at_vertex(const entity_t *entity);
 
-void init_gfx(void)
+void init_gfx(enum bot selected_bot)
 {
     // Load Background tiles and then map
     set_bkg_data(0, 18u, level_map_tiles);
@@ -42,6 +42,13 @@ void init_gfx(void)
     // Load sprites
     set_sprite_data(0, SPRITE_TILE_COUNT, sprites);
     entity_init(&s_entity_player_bot, SPRITE_NUM_PLAYER_BOT);
+
+    if (selected_bot == BOT_ALEX) {
+        s_player_bot_tile_seq = alx_bot_tile_seq;
+    } else {
+        s_player_bot_tile_seq = srna_bot_tile_seq;
+    }
+
     entity_set_tile_sequence(&s_entity_player_bot, s_player_bot_tile_seq, 2);
 
     position_t player_start_grid = {
@@ -167,7 +174,7 @@ void run_level(enum bot selected_bot, const joypads_t *joypads)
         vsync();
     }
 
-    init_gfx();
+    init_gfx(selected_bot);
 
     while (1) {
         update_inputs(joypads);
