@@ -163,9 +163,9 @@ void run_level(enum bot selected_bot, const joypads_t *joypads)
     gotoxy(0, 8);
 
     if (selected_bot == BOT_ALEX) {
-        printf(" # ALEX BOT START #");
+        printf(" # ALX BOT START #");
     } else {
-        printf("# SERENA BOT START #");
+        printf("# SRNA BOT START #");
     }
 
     /* Pause for a bit with the 'level start' shown */
