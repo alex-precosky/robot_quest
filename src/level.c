@@ -1,6 +1,6 @@
+#include "level.h"
 #include "bots.h"
 #include "entity.h"
-#include "level.h"
 #include "res/level_map.h"
 #include "res/level_map_tiles.h"
 #include "res/sprites.h"
@@ -15,7 +15,7 @@ const uint8_t SPRITE_NUM_PLAYER_BOT = 0;
 
 static entity_t s_entity_player_bot;
 
-static uint8_t *s_player_bot_tile_seq = NULL;
+static uint8_t* s_player_bot_tile_seq = NULL;
 
 static const uint8_t GRID_TO_SCREEN_OFFSET_X = 21;
 static const uint8_t GRID_TO_SCREEN_OFFSET_Y = 28;
@@ -28,7 +28,7 @@ typedef struct {
 } position_t;
 
 static position_t grid_to_xy(position_t grid_position);
-static bool is_entity_at_vertex(const entity_t *entity);
+static bool is_entity_at_vertex(const entity_t* entity, position_t* grid_pos);
 
 void init_gfx(enum bot selected_bot)
 {
@@ -63,7 +63,7 @@ void init_gfx(enum bot selected_bot)
     DISPLAY_ON;
 }
 
-static void update_inputs(const joypads_t *joypads)
+static void update_inputs(const joypads_t* joypads)
 {
     joypad_ex(joypads);
     if (joypads->joy0 & J_LEFT) {
@@ -81,19 +81,21 @@ static void update_inputs(const joypads_t *joypads)
 
 static void update_velocities()
 {
-    if (is_entity_at_vertex(&s_entity_player_bot)) {
-        if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_LEFT) {
+    position_t player_grid_pos;
+
+    // Only allow changing velocities at vertices of the movement grid
+    if (is_entity_at_vertex(&s_entity_player_bot, &player_grid_pos)) {
+        if ((s_entity_player_bot.input_dir_bitfield & INPUT_DIR_LEFT) && player_grid_pos.pos_x >= 1) {
             s_entity_player_bot.velocity = VELOCITY_LEFT;
         } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_RIGHT) {
             s_entity_player_bot.velocity = VELOCITY_RIGHT;
-        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_UP) {
+        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_UP && player_grid_pos.pos_y >= 1) {
             s_entity_player_bot.velocity = VELOCITY_UP;
         } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_DOWN) {
             s_entity_player_bot.velocity = VELOCITY_DOWN;
         } else {
             s_entity_player_bot.velocity = VELOCITY_STOP;
         }
-
     }
 }
 
@@ -102,7 +104,7 @@ static void update_positions()
     uint8_t dx = 0;
     uint8_t dy = 0;
 
-    if(s_entity_player_bot.velocity == VELOCITY_LEFT) {
+    if (s_entity_player_bot.velocity == VELOCITY_LEFT) {
         dx = -1;
     } else if (s_entity_player_bot.velocity == VELOCITY_RIGHT) {
         dx = 1;
@@ -121,13 +123,19 @@ static void move_entities()
 }
 
 /**
- * @brief Check if the entity is on top of a grid vertex
+ * @brief Check if the entity is on top of a grid vertex and get the grid coordinate if so
  * @param entity - The entity to inspect the position of
+ * @param grid_pos[out] - The grid coordinate is populated here, if at a grid position
  * @return True if the entity is on top of a grid vertex
  */
-static bool is_entity_at_vertex(const entity_t *entity) {
-    if (((entity->pos_x - GRID_TO_SCREEN_OFFSET_X) % GRID_CELL_WIDTH == 0) &&
-        ((entity->pos_y - GRID_TO_SCREEN_OFFSET_Y) % GRID_CELL_HEIGHT == 0)) {
+static bool is_entity_at_vertex(const entity_t* entity, position_t* grid_pos)
+{
+    uint8_t residual_x = (entity->pos_x - GRID_TO_SCREEN_OFFSET_X) % GRID_CELL_WIDTH;
+    uint8_t residual_y = (entity->pos_y - GRID_TO_SCREEN_OFFSET_Y) % GRID_CELL_HEIGHT;
+
+    if ((residual_x == 0) && (residual_y == 0)) {
+        grid_pos->pos_x = (entity->pos_x - GRID_TO_SCREEN_OFFSET_X) / GRID_CELL_WIDTH;
+        grid_pos->pos_y = (entity->pos_y - GRID_TO_SCREEN_OFFSET_Y) / GRID_CELL_HEIGHT;
         return true;
     } else {
         return false;
@@ -146,7 +154,8 @@ static position_t grid_to_xy(position_t grid_position)
     return screen_position;
 }
 
-static void animate_player_bot() {
+static void animate_player_bot()
+{
     static uint8_t animation_frame_counter = 0;
     animation_frame_counter++;
     if (animation_frame_counter >= 8) { // Animate every 8 VBLs
@@ -155,7 +164,7 @@ static void animate_player_bot() {
     }
 }
 
-void run_level(enum bot selected_bot, const joypads_t *joypads)
+void run_level(enum bot selected_bot, const joypads_t* joypads)
 {
     cls();
     (void)selected_bot;
