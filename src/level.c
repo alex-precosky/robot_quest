@@ -17,8 +17,8 @@ static entity_t s_entity_player_bot;
 
 static uint8_t* s_player_bot_tile_seq = NULL;
 
-static const uint8_t GRID_TO_SCREEN_OFFSET_X = 21;
-static const uint8_t GRID_TO_SCREEN_OFFSET_Y = 28;
+static const uint8_t GRID_TO_SCREEN_OFFSET_X = 13;
+static const uint8_t GRID_TO_SCREEN_OFFSET_Y = 20;
 static const uint8_t GRID_CELL_WIDTH = 8;
 static const uint8_t GRID_CELL_HEIGHT = 8;
 
@@ -52,8 +52,8 @@ void init_gfx(enum bot selected_bot)
     entity_set_tile_sequence(&s_entity_player_bot, s_player_bot_tile_seq, 2);
 
     position_t player_start_grid = {
-        .pos_x = 0,
-        .pos_y = 0,
+        .pos_x = 1,
+        .pos_y = 1,
     };
     position_t player_start_screen = grid_to_xy(player_start_grid);
 
