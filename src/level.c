@@ -30,6 +30,29 @@ typedef struct {
 static position_t grid_to_xy(position_t grid_position);
 static bool is_entity_at_vertex(const entity_t* entity, position_t* grid_pos);
 
+/* The movement grid has one entry per vertex that indicates if an entity can
+   enter into that vertex for not.  A 1 means there's an obstacle and an entity
+   can't go in. A 0 means it can go in */
+#define GRID_ROWS 15
+#define GRID_COLUMNS 19
+static uint8_t movement_grid[GRID_ROWS][GRID_COLUMNS] = {
+    { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+    { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
+    { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+};
+
 void init_gfx(enum bot selected_bot)
 {
     // Load Background tiles and then map
@@ -51,12 +74,14 @@ void init_gfx(enum bot selected_bot)
 
     entity_set_tile_sequence(&s_entity_player_bot, s_player_bot_tile_seq, 2);
 
+    // Set entity initial position
     position_t player_start_grid = {
         .pos_x = 1,
         .pos_y = 1,
     };
     position_t player_start_screen = grid_to_xy(player_start_grid);
-
+    s_entity_player_bot.grid_x = player_start_grid.pos_x;
+    s_entity_player_bot.grid_y = player_start_grid.pos_y;
     entity_set_pos(&s_entity_player_bot, player_start_screen.pos_x, player_start_screen.pos_y);
 
     LCDC_REG |= LCDCF_OBJON; /* Enable the drawing of sprites */
@@ -83,15 +108,19 @@ static void update_velocities()
 {
     position_t player_grid_pos;
 
+    // Get the last grid point the player entered
+    uint8_t player_current_grid_x = s_entity_player_bot.grid_x;
+    uint8_t player_current_grid_y = s_entity_player_bot.grid_y;
+
     // Only allow changing velocities at vertices of the movement grid
     if (is_entity_at_vertex(&s_entity_player_bot, &player_grid_pos)) {
-        if ((s_entity_player_bot.input_dir_bitfield & INPUT_DIR_LEFT) && player_grid_pos.pos_x >= 1) {
+        if ((s_entity_player_bot.input_dir_bitfield & INPUT_DIR_LEFT) && player_grid_pos.pos_x >= 1 && movement_grid[player_current_grid_y][player_current_grid_x - 1] == 0) {
             s_entity_player_bot.velocity = VELOCITY_LEFT;
-        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_RIGHT) {
+        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_RIGHT && movement_grid[player_current_grid_y][player_current_grid_x + 1] == 0) {
             s_entity_player_bot.velocity = VELOCITY_RIGHT;
-        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_UP && player_grid_pos.pos_y >= 1) {
+        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_UP && player_grid_pos.pos_y >= 1 && movement_grid[player_current_grid_y - 1][player_current_grid_x] == 0) {
             s_entity_player_bot.velocity = VELOCITY_UP;
-        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_DOWN) {
+        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_DOWN && movement_grid[player_current_grid_y + 1][player_current_grid_x] == 0) {
             s_entity_player_bot.velocity = VELOCITY_DOWN;
         } else {
             s_entity_player_bot.velocity = VELOCITY_STOP;
@@ -115,6 +144,14 @@ static void update_positions()
     }
 
     entity_set_pos(&s_entity_player_bot, s_entity_player_bot.pos_x + dx, s_entity_player_bot.pos_y + dy);
+
+    // Update grid position
+    // TODO: Remove also calculating grid position in update_velocities()
+    position_t player_grid_pos;
+    if (is_entity_at_vertex(&s_entity_player_bot, &player_grid_pos)) {
+        s_entity_player_bot.grid_x = player_grid_pos.pos_x;
+        s_entity_player_bot.grid_y = player_grid_pos.pos_y;
+    }
 }
 
 static void move_entities()

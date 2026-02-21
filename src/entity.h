@@ -32,8 +32,13 @@ typedef struct {
     uint8_t tile_seq_len;
     uint8_t current_tile_idx; /** The index into tile_sequence that is currently being drawn */
 
+    /* Entity screen position */
     uint8_t pos_x;
     uint8_t pos_y;
+
+    /* Entity last entered grid position */
+    uint8_t grid_x;
+    uint8_t grid_y;
 
     uint8_t input_dir_bitfield; /** Directional control input, from enum
                                     input_dir_e. Could be from a joypad, or from
