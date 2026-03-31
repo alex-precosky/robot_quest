@@ -21,6 +21,9 @@ enum tile_indexes {
     BOT_SELECT_ARROW_FRAME_4,
     BOT_SELECT_ARROW_FRAME_5,
 
+    ENEMY_BOT_FRAME_0,
+    ENEMY_BOT_FRAME_1,
+
     SPRITE_TILE_COUNT
 };
 
