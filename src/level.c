@@ -12,8 +12,10 @@
 #include <stdio.h>
 
 const uint8_t SPRITE_NUM_PLAYER_BOT = 0;
+const uint8_t SPRITE_NUM_ENEMY_BOT = 1;
 
 static entity_t s_entity_player_bot;
+static entity_t s_entity_enemy_bot;
 
 static uint8_t* s_player_bot_tile_seq = NULL;
 
@@ -83,6 +85,19 @@ void init_gfx(enum bot selected_bot)
     s_entity_player_bot.grid_x = player_start_grid.pos_x;
     s_entity_player_bot.grid_y = player_start_grid.pos_y;
     entity_set_pos(&s_entity_player_bot, player_start_screen.pos_x, player_start_screen.pos_y);
+
+    // Initialize enemy bot
+    entity_init(&s_entity_enemy_bot, SPRITE_NUM_ENEMY_BOT);
+    entity_set_tile_sequence(&s_entity_enemy_bot, enemy_bot_tile_seq, 2);
+
+    position_t enemy_start_grid = {
+        .pos_x = 17,
+        .pos_y = 13,
+    };
+    position_t enemy_start_screen = grid_to_xy(enemy_start_grid);
+    s_entity_enemy_bot.grid_x = enemy_start_grid.pos_x;
+    s_entity_enemy_bot.grid_y = enemy_start_grid.pos_y;
+    entity_set_pos(&s_entity_enemy_bot, enemy_start_screen.pos_x, enemy_start_screen.pos_y);
 
     LCDC_REG |= LCDCF_OBJON; /* Enable the drawing of sprites */
     DISPLAY_ON;
@@ -157,6 +172,7 @@ static void update_positions()
 static void move_entities()
 {
     move_sprite(SPRITE_NUM_PLAYER_BOT, s_entity_player_bot.pos_x, s_entity_player_bot.pos_y);
+    move_sprite(SPRITE_NUM_ENEMY_BOT, s_entity_enemy_bot.pos_x, s_entity_enemy_bot.pos_y);
 }
 
 /**
@@ -201,6 +217,16 @@ static void animate_player_bot()
     }
 }
 
+static void animate_enemy_bot()
+{
+    static uint8_t animation_frame_counter = 0;
+    animation_frame_counter++;
+    if (animation_frame_counter >= 8) {
+        entity_animate(&s_entity_enemy_bot);
+        animation_frame_counter = 0;
+    }
+}
+
 void run_level(enum bot selected_bot, const joypads_t* joypads)
 {
     cls();
@@ -229,6 +255,7 @@ void run_level(enum bot selected_bot, const joypads_t* joypads)
         move_entities();
 
         animate_player_bot();
+        animate_enemy_bot();
 
         vsync();
     }

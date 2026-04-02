@@ -29,3 +29,4 @@ enum tile_indexes {
 
 extern uint8_t alx_bot_tile_seq[2];
 extern uint8_t srna_bot_tile_seq[2];
+extern uint8_t enemy_bot_tile_seq[2];
