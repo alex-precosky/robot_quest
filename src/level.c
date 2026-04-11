@@ -131,11 +131,11 @@ static void update_velocities()
     if (is_entity_at_vertex(&s_entity_player_bot, &player_grid_pos)) {
         if ((s_entity_player_bot.input_dir_bitfield & INPUT_DIR_LEFT) && player_grid_pos.pos_x >= 1 && movement_grid[player_current_grid_y][player_current_grid_x - 1] == 0) {
             s_entity_player_bot.velocity = VELOCITY_LEFT;
-        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_RIGHT && movement_grid[player_current_grid_y][player_current_grid_x + 1] == 0) {
+        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_RIGHT && player_grid_pos.pos_x < GRID_COLUMNS - 1 && movement_grid[player_current_grid_y][player_current_grid_x + 1] == 0) {
             s_entity_player_bot.velocity = VELOCITY_RIGHT;
         } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_UP && player_grid_pos.pos_y >= 1 && movement_grid[player_current_grid_y - 1][player_current_grid_x] == 0) {
             s_entity_player_bot.velocity = VELOCITY_UP;
-        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_DOWN && movement_grid[player_current_grid_y + 1][player_current_grid_x] == 0) {
+        } else if (s_entity_player_bot.input_dir_bitfield & INPUT_DIR_DOWN && player_grid_pos.pos_y < GRID_ROWS - 1 && movement_grid[player_current_grid_y + 1][player_current_grid_x] == 0) {
             s_entity_player_bot.velocity = VELOCITY_DOWN;
         } else {
             s_entity_player_bot.velocity = VELOCITY_STOP;
