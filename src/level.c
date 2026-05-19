@@ -1,5 +1,6 @@
 #include "level.h"
 #include "bots.h"
+#include "collision.h"
 #include "entity.h"
 #include "res/level_map.h"
 #include "res/level_map_tiles.h"
@@ -31,6 +32,7 @@ typedef struct {
 
 static position_t grid_to_xy(position_t grid_position);
 static bool is_entity_at_vertex(const entity_t* entity, position_t* grid_pos);
+static bool aabb_overlaps_wall(aabb_t box);
 
 /* The movement grid has one entry per vertex that indicates if an entity can
    enter into that vertex for not.  A 1 means there's an obstacle and an entity
@@ -207,6 +209,43 @@ static position_t grid_to_xy(position_t grid_position)
     return screen_position;
 }
 
+#define SPRITE_SIZE 8u
+
+static aabb_t entity_aabb(const entity_t* e)
+{
+    aabb_t box = { e->pos_x, e->pos_y, SPRITE_SIZE, SPRITE_SIZE };
+    return box;
+}
+
+static bool aabb_overlaps_wall(aabb_t box)
+{
+    uint8_t gx0 = (box.x - GRID_TO_SCREEN_OFFSET_X) / GRID_CELL_WIDTH;
+    uint8_t gy0 = (box.y - GRID_TO_SCREEN_OFFSET_Y) / GRID_CELL_HEIGHT;
+    uint8_t gx1 = ((uint8_t)(box.x + box.w - 1) - GRID_TO_SCREEN_OFFSET_X) / GRID_CELL_WIDTH;
+    uint8_t gy1 = ((uint8_t)(box.y + box.h - 1) - GRID_TO_SCREEN_OFFSET_Y) / GRID_CELL_HEIGHT;
+
+    for (uint8_t gy = gy0; gy <= gy1; ++gy) {
+        for (uint8_t gx = gx0; gx <= gx1; ++gx) {
+            if (gy < GRID_ROWS && gx < GRID_COLUMNS && movement_grid[gy][gx]) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+static void check_collisions()
+{
+    if (aabb_overlap(entity_aabb(&s_entity_player_bot),
+                     entity_aabb(&s_entity_enemy_bot))) {
+        /* TODO: handle player-enemy hit */
+    }
+
+    /* TODO: once bullets exist, loop over them here:
+       - aabb_overlap(bullet_aabb, enemy_aabb)  -> bullet hits enemy
+       - aabb_overlaps_wall(bullet_aabb)        -> bullet hits wall     */
+}
+
 static void animate_player_bot()
 {
     static uint8_t animation_frame_counter = 0;
@@ -252,6 +291,7 @@ void run_level(enum bot selected_bot, const joypads_t* joypads)
         update_inputs(joypads);
         update_velocities();
         update_positions();
+        check_collisions();
         move_entities();
 
         animate_player_bot();
