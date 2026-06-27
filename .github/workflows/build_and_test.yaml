@@ -1,0 +1,54 @@
+---
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    env:
+      GBDK_VERSION: "4.5.0"
+      SDCC_RELEASE: "sdcc-patched-gbdk-4.5.0"
+      SDCC_BUILD: "sdcc-15267"
+      RGBDS_VERSION: "v0.7.0"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install cmake
+        run: sudo apt-get update && sudo apt-get install -y cmake
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install gbdk-2020
+        run: |
+          wget -q https://github.com/gbdk-2020/gbdk-2020/releases/download/${GBDK_VERSION}/gbdk-linux64.tar.gz
+          tar -xzf gbdk-linux64.tar.gz -C $HOME
+          echo "GBDK_HOME=$HOME/gbdk" >> $GITHUB_ENV
+
+      - name: Install gbdk-2020-sdcc
+        run: |
+          wget -q https://github.com/gbdk-2020/gbdk-2020-sdcc/releases/download/${SDCC_RELEASE}/${SDCC_BUILD}-Linux-x64.tar.gz
+          tar -xzf ${SDCC_BUILD}-Linux-x64.tar.gz -C $HOME
+          echo "SDCCDIR=$HOME/sdcc" >> $GITHUB_ENV
+
+      - name: Install rgbds
+        run: |
+          wget -q https://github.com/gbdev/rgbds/releases/download/${RGBDS_VERSION}/rgbds-0.7.0-linux-x86_64.tar.xz
+          mkdir -p $HOME/rgbds
+          tar -xJf rgbds-0.7.0-linux-x86_64.tar.xz -C $HOME/rgbds
+          echo "$HOME/rgbds" >> $GITHUB_PATH
+
+      - name: Build
+        run: cmake -DCMAKE_TOOLCHAIN_FILE=cmake/lcc.toolchain.cmake -Bbuild && cmake --build build
