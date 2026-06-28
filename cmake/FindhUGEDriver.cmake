@@ -3,6 +3,8 @@
 
 ExternalProject_Add(hUGEDriver_repo
   GIT_REPOSITORY https://github.com/SuperDisk/hUGEDriver.git
+  PATCH_COMMAND git apply ${CMAKE_CURRENT_LIST_DIR}/0002-rgb2sdas-rgbds-v1.0.1-compat.patch
+  UPDATE_COMMAND "" # Don't update, and therefore, reapply the patch on each build
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
@@ -35,7 +37,7 @@ set(HUGEDRIVER_O ${HUGEDRIVER_BINARY_DIR}/hUGEDRIVER.o)
 set(HUGEDRIVER_LIB ${HUGEDRIVER_BINARY_DIR}/hUGEDriver.lib)
 
 add_custom_command(OUTPUT ${HUGEDRIVER_OBJ}
-  COMMAND ${RGBASM} -i${HUGEDRIVER_SOURCE_DIR} -DGBDK -o${HUGEDRIVER_OBJ} ${HUGEDRIVER_ASM_SRC}
+  COMMAND ${RGBASM} -I${HUGEDRIVER_SOURCE_DIR} -DGBDK -o${HUGEDRIVER_OBJ} ${HUGEDRIVER_ASM_SRC}
 )
 
 add_custom_command(OUTPUT ${HUGEDRIVER_O}

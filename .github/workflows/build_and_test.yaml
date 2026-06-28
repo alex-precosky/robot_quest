@@ -17,7 +17,7 @@ jobs:
       GBDK_VERSION: "4.5.0"
       SDCC_RELEASE: "sdcc-patched-gbdk-4.5.0"
       SDCC_BUILD: "sdcc-15267"
-      RGBDS_VERSION: "v0.7.0"
+      RGBDS_VERSION: "v1.0.1"
 
     steps:
       - name: Checkout code
@@ -45,9 +45,9 @@ jobs:
 
       - name: Install rgbds
         run: |
-          wget -q https://github.com/gbdev/rgbds/releases/download/${RGBDS_VERSION}/rgbds-0.7.0-linux-x86_64.tar.xz
+          wget -q https://github.com/gbdev/rgbds/releases/download/${RGBDS_VERSION}/rgbds-linux-x86_64.tar.xz
           mkdir -p $HOME/rgbds
-          tar -xJf rgbds-0.7.0-linux-x86_64.tar.xz -C $HOME/rgbds
+          tar -xJf rgbds-linux-x86_64.tar.xz -C $HOME/rgbds
           echo "$HOME/rgbds" >> $GITHUB_PATH
 
       - name: Build
