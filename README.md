@@ -1,5 +1,7 @@
 # Robot Quest
 
+[![Build and Test](https://github.com/alex-precosky/robot_quest/actions/workflows/build_and_test.yaml/badge.svg)](https://github.com/alex-precosky/robot_quest/actions/workflows/build_and_test.yaml)
+
 This is a game for the original Game Boy console, created to learn about making
 Game Boy games.
 
