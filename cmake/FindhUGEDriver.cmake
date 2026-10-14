@@ -3,6 +3,7 @@
 
 ExternalProject_Add(hUGEDriver_repo
   GIT_REPOSITORY https://github.com/SuperDisk/hUGEDriver.git
+  GIT_TAG 727ab8ebb6bac20eecf82f35356fe4871a2a383b
   PATCH_COMMAND git apply ${CMAKE_CURRENT_LIST_DIR}/0002-rgb2sdas-rgbds-v1.0.1-compat.patch
   UPDATE_COMMAND "" # Don't update, and therefore, reapply the patch on each build
   CONFIGURE_COMMAND ""
