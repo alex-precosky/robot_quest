@@ -2,10 +2,9 @@
 #include "SFX_00.h"
 #include "SFX_01.h"
 #include "bots.h"
-#include "cbtfx.h"
 #include "entity.h"
-#include "hUGEDriver.h"
 #include "res/sprites.h"
+#include "sound.h"
 #include "sprite_idx.h"
 #include <gb/gb.h>
 #include <gbdk/console.h>
@@ -13,8 +12,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-
-extern const hUGESong_t sample_song;
 
 const uint8_t SPRITE_NUM_ALEX_BOT = 0;
 const uint8_t SPRITE_NUM_SRNA_BOT = 1;
@@ -73,34 +70,6 @@ typedef enum {
     ARROW_POS_ALX,
     ARROW_POS_SRNA
 } arrow_position_e;
-
-static void init_sound()
-{
-    /* Initialize sound hardware */
-    NR52_REG = 0x80;
-    NR51_REG = 0xFF;
-    NR50_REG = 0x77;
-
-    __critical
-    {
-        add_VBL(hUGE_dosound);
-        add_VBL(CBTFX_update);
-        hUGE_init(&sample_song);
-    }
-}
-
-static void stop_sound()
-{
-    __critical
-    {
-        remove_VBL(hUGE_dosound);
-        remove_VBL(CBTFX_update);
-        hUGE_mute_channel(HT_CH1, 1);
-        hUGE_mute_channel(HT_CH2, 1);
-        hUGE_mute_channel(HT_CH3, 1);
-        hUGE_mute_channel(HT_CH4, 1);
-    }
-}
 
 static void load_sprites()
 {
@@ -162,7 +131,7 @@ static void update_inputs(const joypads_t *joypads)
     } else if (joypads->joy0 & J_START) {
         change_state(STATE_BOT_CHOSEN);
         entity_set_tile_sequence(&s_entity_bot_select_arrow, bot_selected_tile_seq, 2);
-        CBTFX_init(SFX_01);
+        sound_play_sfx(SFX_01);
     } else {
         s_entity_bot_select_arrow.input_dir_bitfield = 0;
     }
@@ -173,13 +142,13 @@ static void move_entities()
     if (s_entity_bot_select_arrow.input_dir_bitfield & INPUT_DIR_LEFT) {
         if (s_entity_bot_select_arrow.pos_x != ALEX_BOT_X_POS) {
             entity_set_pos(&s_entity_bot_select_arrow, ALEX_BOT_X_POS, ARROW_Y_POS);
-            CBTFX_init(SFX_00);
+            sound_play_sfx(SFX_00);
             s_selected_bot = BOT_ALEX;
         }
     } else if (s_entity_bot_select_arrow.input_dir_bitfield & INPUT_DIR_RIGHT) {
         if (s_entity_bot_select_arrow.pos_x != SERENA_BOT_X_POS) {
             entity_set_pos(&s_entity_bot_select_arrow, SERENA_BOT_X_POS, ARROW_Y_POS);
-            CBTFX_init(SFX_00);
+            sound_play_sfx(SFX_00);
             s_selected_bot = BOT_SERENA;
         }
     }
@@ -200,7 +169,7 @@ title_screen_result_t run_title_screen(const joypads_t *joypads)
 {
     change_state(STATE_CHOOSING_BOT);
 
-    init_sound();
+    sound_init();
     draw_text();
     load_sprites();
 
@@ -230,7 +199,7 @@ title_screen_result_t run_title_screen(const joypads_t *joypads)
     }
 
     hide_sprites();
-    stop_sound();
+    sound_stop();
 
     title_screen_result_t result = {
         .chosen_bot = s_selected_bot,
